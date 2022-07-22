@@ -1,4 +1,5 @@
 import numpy as np
+from Piece import *
 # I was thinking we would have an object for the board itself
 # and maybe some for pieces and the gameplay and then the GUI. idk we'll figure it out
 
@@ -24,10 +25,25 @@ class Board:
         outline = '+---+---+---+---+---+---+---+---+'
         for i in range(8):
             print(outline)
-            print(f"| {b[1][i]} | {b[2][i]} | {b[3][i]} | {b[4][i]} | {b[5][i]} | {b[6][i]} | {b[7][i]} | {b[8][i]} |")
+            print(f"| {b[i][0]} | {b[i][1]} | {b[i][2]} | {b[i][3]} | {b[i][4]} | {b[i][5]} | {b[i][6]} | {b[i][7]} |")
         print(outline)
         pass
 
     def setup_board(self):
-        self.state = np.ndarray(size = (8,8))
+        self.state = np.ndarray((8,8), dtype=Piece)
+        
+        pieces = [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]
+        for i in range(8):
+            #Setting up non-pawn row
+            self.state[0][i] = pieces[i](False) #black pieces at the top
+            self.state[7][i] = pieces[i](True)  #white pieces at the bottom
+                
+            #Setting up pawn rows    
+            self.state[1][i] = Pawn(False)
+            self.state[6][i] = Pawn(True)
+
+            #empty rows, which is rows 2-6
+            for j in range(2, 6):
+                self.state[j][i] = Empty() 
+
     

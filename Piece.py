@@ -15,36 +15,71 @@ class Piece():
     #self.white is a boolean
     def isWhite(self):
         return self.white
+    
+    def __repr__(self):
+        pass
 
 
 class Pawn(Piece):
     def __init__(self, white):
         super().__init__(white) #i think this is how you can just use the superclass's initialization
 
+    def __repr__(self):
+        return "P"
+
 class Rook(Piece):
-    def __init__(self):
-        pass
+    def __init__(self, white):
+        super().__init__(white)
+
+    def __repr__(self):
+        return "R"
 
 class Knight(Piece):
-    def __init__(self):
-        pass
+    def __init__(self, white):
+        super().__init__(white)
+
+    def __repr__(self):
+        return "N"
 
 class Bishop(Piece):
-    def __init__(self):
+    def __init__(self, white):
+        super().__init__(white)
         pass
+
+    def __repr__(self):
+        return "B"
 
 class Queen(Piece):
-    def __init__(self):
+    def __init__(self, white):
+        super().__init__(white)
         pass
 
+    def __repr__(self):
+        return "Q"
+
 class King(Piece):
-    def __init__(self):
+    def __init__(self, white):
+        super().__init__(white)
         pass
+
+    def __repr__(self):
+        return "K"
     
 class InvisiblePawn(Piece):
     # For en passant
     
+    def __init__(self, white):
+        super().__init__(white)
+        pass
+
+    def __repr__(self):
+        return " "
+
+class Empty(Piece):
     def __init__(self):
         pass
+
+    def __repr__(sefl):
+        return " "
 
 
