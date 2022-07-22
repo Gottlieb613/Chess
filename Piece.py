@@ -6,23 +6,26 @@ class Piece():
     def __init__(self, white):
         self.white = white
 
-    #maybe this shuoldn't be in Piece() but in the individual subclasses? since
-    # this function should behave differently for the different pieces?
     def is_valid_move(self):
-        # TODO
         pass
 
     #self.white is a boolean
     def isWhite(self):
+        if self is None: #for an empty tile
+            return None
         return self.white
     
     def __repr__(self):
-        pass
+        if self is None: #for an empty tile
+            return " "
 
 
 class Pawn(Piece):
     def __init__(self, white):
-        super().__init__(white) #i think this is how you can just use the superclass's initialization
+        super().__init__(white)
+
+    def is_valid_move(self):
+        pass #TODO
 
     def __repr__(self):
         return "P"
@@ -31,6 +34,9 @@ class Rook(Piece):
     def __init__(self, white):
         super().__init__(white)
 
+    def is_valid_move(self, board, new_row, new_col):
+        pass #TODO
+
     def __repr__(self):
         return "R"
 
@@ -38,13 +44,19 @@ class Knight(Piece):
     def __init__(self, white):
         super().__init__(white)
 
+    def is_valid_move(self):
+        pass #TODO
+
     def __repr__(self):
         return "N"
 
 class Bishop(Piece):
     def __init__(self, white):
         super().__init__(white)
-        pass
+
+    def is_valid_move(self):
+        pass #TODO
+
 
     def __repr__(self):
         return "B"
@@ -52,7 +64,9 @@ class Bishop(Piece):
 class Queen(Piece):
     def __init__(self, white):
         super().__init__(white)
-        pass
+
+    def is_valid_move(self):
+        pass #TODO
 
     def __repr__(self):
         return "Q"
@@ -60,7 +74,9 @@ class Queen(Piece):
 class King(Piece):
     def __init__(self, white):
         super().__init__(white)
-        pass
+
+    def is_valid_move(self):
+        pass #TODO
 
     def __repr__(self):
         return "K"
@@ -70,16 +86,10 @@ class InvisiblePawn(Piece):
     
     def __init__(self, white):
         super().__init__(white)
-        pass
+
+    #This isnt a real piece so it should never be able to move
+    def is_valid_move(self):
+        return False
 
     def __repr__(self):
         return " "
-
-class Empty(Piece):
-    def __init__(self):
-        pass
-
-    def __repr__(sefl):
-        return " "
-
-

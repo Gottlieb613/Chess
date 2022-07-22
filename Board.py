@@ -31,6 +31,7 @@ class Board:
 
     def setup_board(self):
         self.state = np.ndarray((8,8), dtype=Piece)
+            #QUESTION from Charlie to Elijah- what is advantage to numpy ndarray? Instead of normal 2d list here
         
         pieces = [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]
         for i in range(8):
@@ -45,5 +46,11 @@ class Board:
             #empty rows, which is rows 2-6
             for j in range(2, 6):
                 self.state[j][i] = Empty() 
+    
+    #this allows us to subscript the Board object
+    # so if b = Board(), then b[2] will give row2
+    # and therefore b[2][4] will give us tile 2,4
+    def __getitem__(self, item):
+        return self.state[item]
 
     
