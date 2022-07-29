@@ -19,9 +19,7 @@ class Piece():
     movement patterns for the pieces
     '''
     def can_land_there(self, board, row, col):
-        if not board.in_board(row, col):
-            return False
-        return board[row][col] is None or (board[row][col].isWhite() != self.isWhite())
+        return board.in_board(row, col) and not self.teammate(board[row][col])
 
     def valid_move_list(self, board):
         pass
@@ -103,49 +101,65 @@ class Rook(Piece):
         moves = []
 
         #RIGHT
-        for i in range(1, 6):
+        for i in range(1, 8):
             new_col = self.col + i
 
             if not board.in_board(self.row, new_col) or self.teammate(board[self.row][new_col]):
                 break
 
             landing_piece = board[self.row][new_col]
-            if landing_piece is None or self.opponent(landing_piece):
+            if landing_piece is None:
                 moves.append((self.row, new_col))
+            
+            if self.opponent(landing_piece):
+                moves.append((self.row, new_col))
+                break
 
         #LEFT
-        for i in range(1, 6):
+        for i in range(1, 8):
             new_col = self.col - i
 
             if not board.in_board(self.row, new_col) or self.teammate(board[self.row][new_col]):
                 break
 
             landing_piece = board[self.row][new_col]
-            if landing_piece is None or self.opponent(landing_piece):
+            if landing_piece is None:
                 moves.append((self.row, new_col))
+            
+            if self.opponent(landing_piece):
+                moves.append((self.row, new_col))
+                break
 
 
         #UP
-        for i in range(1, 6):
+        for i in range(1, 8):
             new_row = self.row - i
 
             if not board.in_board(new_row, self.col) or self.teammate(board[new_row][self.col]):
                 break
 
             landing_piece = board[new_row][self.col]
-            if landing_piece is None or self.opponent(landing_piece):
+            if landing_piece is None:
                 moves.append((new_row, self.col))
+            
+            if self.opponent(landing_piece):
+                moves.append((new_row, self.col))
+                break
 
         #DOWN
-        for i in range(1, 6):
+        for i in range(1, 8):
             new_row = self.row + i
 
             if not board.in_board(new_row, self.col) or self.teammate(board[new_row][self.col]):
                 break
 
             landing_piece = board[new_row][self.col]
-            if landing_piece is None or self.opponent(landing_piece):
+            if landing_piece is None:
                 moves.append((new_row, self.col))
+            
+            if self.opponent(landing_piece):
+                moves.append((new_row, self.col))
+                break
         
         return moves
 
@@ -155,6 +169,22 @@ class Rook(Piece):
 class Knight(Piece):
     def __init__(self, white):
         super().__init__(white)
+    
+    def valid_move_list(self, board):
+        moves = []
+
+        r = self.row
+        c = self.col
+        l_shapes = ((r-2, c+1), (r-1, c+2), #first quadrant
+                    (r+1, c-2), (r+2, c-1), #second quadrant
+                    (r+2, c-1), (r+1, c-2), #third quadrant
+                    (r-1, c+2), (r-2, c+1)) #fourth quadrant
+        
+        for move in l_shapes:
+            if self.can_land_there(board, move[0], move[1]):
+                moves.append(move)
+        
+        return moves
 
     def __repr__(self):
         return "N"
@@ -163,6 +193,74 @@ class Bishop(Piece):
     def __init__(self, white):
         super().__init__(white)
 
+    def valid_move_list(self, board):
+        moves = []
+
+        #UP-RIGHT
+        for i in range(1, 8):
+            new_row, new_col = self.row - i, self.col + i
+
+            if not board.in_board(new_row, new_col) or self.teammate(board[new_row][new_col]):
+                break
+
+            landing_piece = board[new_row][new_col]
+            if landing_piece is None:
+                moves.append((new_row, new_col))
+            
+            if self.opponent(landing_piece):
+                moves.append((new_row, new_col))
+                break
+
+        #UP-LEFT
+        for i in range(1, 8):
+            new_row, new_col = self.row - i, self.col - i
+
+            if not board.in_board(new_row, new_col) or self.teammate(board[new_row][new_col]):
+                break
+
+            landing_piece = board[new_row][new_col]
+            if landing_piece is None:
+                moves.append((new_row, new_col))
+            
+            if self.opponent(landing_piece):
+                moves.append((new_row, new_col))
+                break
+
+
+        #DOWN-RIGHT
+        for i in range(1, 8):
+            new_row, new_col = self.row + i, self.col - i
+
+            if not board.in_board(new_row, new_col) or self.teammate(board[new_row][new_col]):
+                break
+
+            landing_piece = board[new_row][new_col]
+            if landing_piece is None:
+                moves.append((new_row, new_col))
+            
+            if self.opponent(landing_piece):
+                moves.append((new_row, new_col))
+                break
+            
+            
+
+        #DOWN-LEFT
+        for i in range(1, 8):
+            new_row, new_col = self.row + i, self.col + i
+
+            if not board.in_board(new_row, new_col) or self.teammate(board[new_row][new_col]):
+                break
+
+            landing_piece = board[new_row][new_col]
+            if landing_piece is None:
+                moves.append((new_row, new_col))
+            
+            if self.opponent(landing_piece):
+                moves.append((new_row, new_col))
+                break
+    
+        return moves
+
     def __repr__(self):
         return "B"
 
@@ -170,12 +268,50 @@ class Queen(Piece):
     def __init__(self, white):
         super().__init__(white)
 
+    def valid_move_list(self, board):
+        #A queen's valid moves is exactly a rook + a bishop
+
+        #make a fake Rook object placed the same tile
+            #so we can see what a rook's valid_move_list would be
+        imitate_rook = Rook(self.white)
+        imitate_rook.row = self.row
+        imitate_rook.col = self.col
+
+        #same as above but with bishop
+        imitate_bishop = Bishop(self.white)
+        imitate_bishop.row = self.row
+        imitate_bishop.col = self.col
+
+        #concatenate the rook and bishop's valid moves
+        return imitate_rook.valid_move_list(board) + imitate_bishop.valid_move_list(board)
+
     def __repr__(self):
         return "Q"
 
 class King(Piece):
     def __init__(self, white):
         super().__init__(white)
+    
+    def valid_move_list(self, board):
+        moves = []
+
+        r = self.row
+        c = self.col
+        all_directions = ((r-1, c+1), (r-1, c), #↗, ↑ 
+                          (r-1, c-1), (r, c-1), #↖, ←
+                          (r+1, c-1), (r+1, c), #↙, ↓ 
+                          (r+1, c+1), (r, c+1)) #↘, → 
+
+        for move in all_directions:
+            if board.in_board(move[0], move[1]) and not self.teammate(board[move[0]][move[1]]):
+                moves.append(move)
+            
+        return moves
+
+        #TODO: Important. We still need to add a way to remove moves
+        #  that would put the King in check. Maybe this is done
+        #  in the actual gameplay loop
+
 
     def __repr__(self):
         return "K"
