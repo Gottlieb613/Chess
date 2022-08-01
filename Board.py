@@ -45,12 +45,15 @@ class Board:
 
             #empty rows, which is rows 2-6
             for j in range(2, 6):
-                self.state[j][i] = Empty() 
+                self.state[j][i] = None
     
     #this allows us to subscript the Board object
     # so if b = Board(), then b[2] will give row2
     # and therefore b[2][4] will give us tile 2,4
     def __getitem__(self, item):
         return self.state[item]
+
+    def is_board(self, row, col): 
+        return row >= 0 and row < 8 and col >= 0 and col < 8
 
     

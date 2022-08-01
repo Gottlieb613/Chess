@@ -53,54 +53,57 @@ class Pawn(Piece):
     Since they can ONLY go diag if they are capturing
     and can ONLY jump forward if that spot is EMPTY (same w/ double jump)'''
     def valid_move_list(self, board):
-        moves = [] #a list of tuples -> (row, col)
+        possible_moves = [] # a list of tuples -> (row, col)
 
-        if self.isWhite(): #starts at row6, moves UP (smaller row vals)
+        if self.isWhite(): # starts at row6, moves UP (smaller row vals)
             jump1 = self.row - 1
             jump2 = self.row - 2
             can_double_jump = self.row == 6
 
-        else: #black so starts at row 1, moves DOWN (bigger row values)
+        else: # black so starts at row 1, moves DOWN (bigger row values)
             jump1 = self.row + 1
             jump2 = self.row + 2
             can_double_jump = self.row == 1
         
-        #Single jump up
+        # Single jump up
         if board.in_board(jump1, self.col) and board[jump1, self.col] is None:
-            moves.append((jump1, self.col))
+            possible_moves.append((jump1, self.col))
 
-        #Double jump
+        # Double jump
         if can_double_jump and board[jump2, self.col] is None:
-            moves.append((jump2, self.col))
+            possible_moves.append((jump2, self.col))
 
-        #Diagonal capture
+        # Diagonal capture
         left = self.col - 1
         right = self.col + 1
 
-            # forward-left
+        # forward-left
         piece_diag_left = board[jump1][left]
         if board.in_board(jump1, left) and piece_diag_left is not None and self.opponent(piece_diag_left):
-            moves.append((jump1, left))
+            possible_moves.append((jump1, left))
             
-            # forward-right
+        # forward-right
         piece_diag_right = board[jump1][right]
         if board.in_board(jump1, right) and piece_diag_left is not None and self.opponent(piece_diag_right):
-            moves.append((jump1, left))
+            possible_moves.append((jump1, left))
+
+        # en passant 
         
-        return moves
+        return possible_moves
 
 
     def __repr__(self):
         return "P"
+
 
 class Rook(Piece):
     def __init__(self, white):
         super().__init__(white)
     
     def valid_move_list(self, board):
-        moves = []
+        possible_moves = []
 
-        #RIGHT
+        # RIGHT
         for i in range(1, 8):
             new_col = self.col + i
 
@@ -109,13 +112,13 @@ class Rook(Piece):
 
             landing_piece = board[self.row][new_col]
             if landing_piece is None:
-                moves.append((self.row, new_col))
+                possible_moves.append((self.row, new_col))
             
             if self.opponent(landing_piece):
-                moves.append((self.row, new_col))
+                possible_moves.append((self.row, new_col))
                 break
 
-        #LEFT
+        # LEFT
         for i in range(1, 8):
             new_col = self.col - i
 
@@ -124,14 +127,14 @@ class Rook(Piece):
 
             landing_piece = board[self.row][new_col]
             if landing_piece is None:
-                moves.append((self.row, new_col))
+                possible_moves.append((self.row, new_col))
             
             if self.opponent(landing_piece):
-                moves.append((self.row, new_col))
+                possible_moves.append((self.row, new_col))
                 break
 
 
-        #UP
+        # UP
         for i in range(1, 8):
             new_row = self.row - i
 
@@ -140,13 +143,13 @@ class Rook(Piece):
 
             landing_piece = board[new_row][self.col]
             if landing_piece is None:
-                moves.append((new_row, self.col))
+                possible_moves.append((new_row, self.col))
             
             if self.opponent(landing_piece):
-                moves.append((new_row, self.col))
+                possible_moves.append((new_row, self.col))
                 break
 
-        #DOWN
+        # DOWN
         for i in range(1, 8):
             new_row = self.row + i
 
@@ -155,36 +158,39 @@ class Rook(Piece):
 
             landing_piece = board[new_row][self.col]
             if landing_piece is None:
-                moves.append((new_row, self.col))
+                possible_moves.append((new_row, self.col))
             
             if self.opponent(landing_piece):
-                moves.append((new_row, self.col))
+                possible_moves.append((new_row, self.col))
                 break
         
-        return moves
+        return possible_moves
 
     def __repr__(self):
         return "R"
+
 
 class Knight(Piece):
     def __init__(self, white):
         super().__init__(white)
     
     def valid_move_list(self, board):
-        moves = []
+        possible_moves = []
 
         r = self.row
         c = self.col
-        l_shapes = ((r-2, c+1), (r-1, c+2), #first quadrant
-                    (r+1, c-2), (r+2, c-1), #second quadrant
-                    (r+2, c-1), (r+1, c-2), #third quadrant
-                    (r-1, c+2), (r-2, c+1)) #fourth quadrant
+        l_shapes = [
+            (r-2, c+1), (r-1, c+2), # first quadrant
+            (r+1, c-2), (r+2, c-1), # second quadrant
+            (r+2, c-1), (r+1, c-2), # third quadrant
+            (r-1, c+2), (r-2, c+1), # fourth quadrant
+        ]
         
         for move in l_shapes:
             if self.can_land_there(board, move[0], move[1]):
-                moves.append(move)
+                possible_moves.append(move)
         
-        return moves
+        return possible_moves
 
     def __repr__(self):
         return "N"
@@ -194,9 +200,9 @@ class Bishop(Piece):
         super().__init__(white)
 
     def valid_move_list(self, board):
-        moves = []
+        possible_moves = []
 
-        #UP-RIGHT
+        # UP-RIGHT
         for i in range(1, 8):
             new_row, new_col = self.row - i, self.col + i
 
@@ -205,13 +211,13 @@ class Bishop(Piece):
 
             landing_piece = board[new_row][new_col]
             if landing_piece is None:
-                moves.append((new_row, new_col))
+                possible_moves.append((new_row, new_col))
             
             if self.opponent(landing_piece):
-                moves.append((new_row, new_col))
+                possible_moves.append((new_row, new_col))
                 break
 
-        #UP-LEFT
+        # UP-LEFT
         for i in range(1, 8):
             new_row, new_col = self.row - i, self.col - i
 
@@ -220,14 +226,14 @@ class Bishop(Piece):
 
             landing_piece = board[new_row][new_col]
             if landing_piece is None:
-                moves.append((new_row, new_col))
+                possible_moves.append((new_row, new_col))
             
             if self.opponent(landing_piece):
-                moves.append((new_row, new_col))
+                possible_moves.append((new_row, new_col))
                 break
 
 
-        #DOWN-RIGHT
+        # DOWN-RIGHT
         for i in range(1, 8):
             new_row, new_col = self.row + i, self.col - i
 
@@ -236,15 +242,13 @@ class Bishop(Piece):
 
             landing_piece = board[new_row][new_col]
             if landing_piece is None:
-                moves.append((new_row, new_col))
+                possible_moves.append((new_row, new_col))
             
             if self.opponent(landing_piece):
-                moves.append((new_row, new_col))
+                possible_moves.append((new_row, new_col))
                 break
             
-            
-
-        #DOWN-LEFT
+        # DOWN-LEFT
         for i in range(1, 8):
             new_row, new_col = self.row + i, self.col + i
 
@@ -253,37 +257,41 @@ class Bishop(Piece):
 
             landing_piece = board[new_row][new_col]
             if landing_piece is None:
-                moves.append((new_row, new_col))
+                possible_moves.append((new_row, new_col))
             
             if self.opponent(landing_piece):
-                moves.append((new_row, new_col))
+                possible_moves.append((new_row, new_col))
                 break
     
-        return moves
+        return possible_moves
 
     def __repr__(self):
         return "B"
+
 
 class Queen(Piece):
     def __init__(self, white):
         super().__init__(white)
 
     def valid_move_list(self, board):
-        #A queen's valid moves is exactly a rook + a bishop
+        # A queen's valid moves is exactly a rook + a bishop
 
-        #make a fake Rook object placed the same tile
-            #so we can see what a rook's valid_move_list would be
+        # make a fake Rook object placed the same tile
+        # so we can see what a rook's valid_move_list would be
         imitate_rook = Rook(self.white)
         imitate_rook.row = self.row
         imitate_rook.col = self.col
+        rook_possible_moves = imitate_rook.valid_move_list(board)
 
-        #same as above but with bishop
+        # same as above but with bishop
         imitate_bishop = Bishop(self.white)
         imitate_bishop.row = self.row
         imitate_bishop.col = self.col
+        bishop_possible_moves = imitate_bishop.valid_move_list(board)
 
-        #concatenate the rook and bishop's valid moves
-        return imitate_rook.valid_move_list(board) + imitate_bishop.valid_move_list(board)
+        # concatenate the rook and bishop's valid moves
+        possible_moves = rook_possible_moves.extend(bishop_possible_moves)
+        return possible_moves
 
     def __repr__(self):
         return "Q"
@@ -293,24 +301,29 @@ class King(Piece):
         super().__init__(white)
     
     def valid_move_list(self, board):
-        moves = []
+        possible_moves = []
 
         r = self.row
         c = self.col
-        all_directions = ((r-1, c+1), (r-1, c), #↗, ↑ 
-                          (r-1, c-1), (r, c-1), #↖, ←
-                          (r+1, c-1), (r+1, c), #↙, ↓ 
-                          (r+1, c+1), (r, c+1)) #↘, → 
+        all_directions = [
+            (r-1, c+1), (r-1, c), # ↗, ↑ 
+            (r-1, c-1), (r, c-1), # ↖, ←
+            (r+1, c-1), (r+1, c), # ↙, ↓ 
+            (r+1, c+1), (r, c+1), # ↘, → 
+        ]
 
         for move in all_directions:
             if board.in_board(move[0], move[1]) and not self.teammate(board[move[0]][move[1]]):
-                moves.append(move)
+                possible_moves.append(move)
             
-        return moves
+        return possible_moves
 
-        #TODO: Important. We still need to add a way to remove moves
-        #  that would put the King in check. Maybe this is done
-        #  in the actual gameplay loop
+        # TODO: Important. We still need to add a way to remove moves
+        # that would put the King in check. Maybe this is done
+        # in the actual gameplay loop
+        # We could compile a list of the possible next moves for the foe
+        # and then use that list to also check for the king
+        # we also need to add in 
 
 
     def __repr__(self):
@@ -322,7 +335,7 @@ class InvisiblePawn(Piece):
     def __init__(self, white):
         super().__init__(white)
 
-    #This isnt a real piece so it should never be able to move
+    # This isnt a real piece so it should never be able to move
     def valid_move_list(self, board):
         return []
 
