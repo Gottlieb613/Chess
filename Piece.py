@@ -1,5 +1,4 @@
 
-
 class Piece():
     def __init__(self, white, row, col):
         self.white = white
@@ -29,16 +28,20 @@ class Piece():
 
 
     #self.white is a boolean
-    def isWhite(self):
+    def is_white(self):
         if self is None: #for an empty tile
             return None
         return self.white
     
     def teammate(self, piece):
-        return self.isWhite() == piece.isWhite()
+        if piece is None: #would give error in piece.is_white() otherwise
+            return False
+        return self.is_white() == piece.is_white()
     
     def opponent(self, piece):
-        return self.isWhite() != piece.isWhite()
+        if piece is None:
+            return False
+        return self.is_white() != piece.is_white()
     
     def __repr__(self):
         if self is None: #for an empty tile
@@ -46,16 +49,16 @@ class Piece():
 
 
 class Pawn(Piece):
-    def __init__(self, white):
-        super().__init__(white)
+    #TODO: Check- if i do not have any __init__ function it should default to the Piece one right?
 
     '''Works a little different for pawns
     Since they can ONLY go diag if they are capturing
     and can ONLY jump forward if that spot is EMPTY (same w/ double jump)'''
     def valid_move_list(self, board):
         possible_moves = [] # a list of tuples -> (row, col)
+        print(f"My row,col is {self.row}, {self.col}")
 
-        if self.isWhite(): # starts at row6, moves UP (smaller row vals)
+        if self.is_white(): # starts at row6, moves UP (smaller row vals)
             jump1 = self.row - 1
             jump2 = self.row - 2
             can_double_jump = self.row == 6
@@ -84,8 +87,8 @@ class Pawn(Piece):
             
         # forward-right
         piece_diag_right = board[jump1][right]
-        if board.in_board(jump1, right) and piece_diag_left is not None and self.opponent(piece_diag_right):
-            possible_moves.append((jump1, left))
+        if board.in_board(jump1, right) and piece_diag_right is not None and self.opponent(piece_diag_right):
+            possible_moves.append((jump1, right))
 
         # en passant 
         
@@ -93,12 +96,12 @@ class Pawn(Piece):
 
 
     def __repr__(self):
-        return "P"
+        if self.is_white():
+            return "P"
+        return "p"
 
 
 class Rook(Piece):
-    def __init__(self, white):
-        super().__init__(white)
     
     def valid_move_list(self, board):
         possible_moves = []
@@ -167,12 +170,12 @@ class Rook(Piece):
         return possible_moves
 
     def __repr__(self):
-        return "R"
+        if self.is_white():
+            return "R"
+        return "r"
 
 
 class Knight(Piece):
-    def __init__(self, white):
-        super().__init__(white)
     
     def valid_move_list(self, board):
         possible_moves = []
@@ -193,11 +196,11 @@ class Knight(Piece):
         return possible_moves
 
     def __repr__(self):
-        return "N"
+        if self.is_white():
+            return "N"
+        return "n"
 
 class Bishop(Piece):
-    def __init__(self, white):
-        super().__init__(white)
 
     def valid_move_list(self, board):
         possible_moves = []
@@ -266,12 +269,12 @@ class Bishop(Piece):
         return possible_moves
 
     def __repr__(self):
-        return "B"
+        if self.is_white():
+            return "B"
+        return "b"
 
 
 class Queen(Piece):
-    def __init__(self, white):
-        super().__init__(white)
 
     def valid_move_list(self, board):
         # A queen's valid moves is exactly a rook + a bishop
@@ -294,11 +297,11 @@ class Queen(Piece):
         return possible_moves
 
     def __repr__(self):
-        return "Q"
+        if self.is_white():
+            return "Q"
+        return "q"
 
 class King(Piece):
-    def __init__(self, white):
-        super().__init__(white)
     
     def valid_move_list(self, board):
         possible_moves = []
@@ -327,13 +330,13 @@ class King(Piece):
 
 
     def __repr__(self):
-        return "K"
+        if self.is_white():
+            return "K"
+        return "k"
     
 class InvisiblePawn(Piece):
     # For en passant
     
-    def __init__(self, white):
-        super().__init__(white)
 
     # This isnt a real piece so it should never be able to move
     def valid_move_list(self, board):
